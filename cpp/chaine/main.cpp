@@ -25,6 +25,20 @@ int main() {
   chaine_0.affecter("une très très très très très très très très très longue chaine !");
   chaine_0.afficher();
 
+  chaine_0.affecter("une petite chaine");
+  chaine_0.afficher();
+
+  chaine_0.affecter( "Sempezi cubut bebhebdez anceoba uckiiso hutnewu nuvmi cavidu lo se "
+                     "mup subhoij ono vodacfe vusuov. Cowizto rubeg ovupi go la abtuaso "
+                     "orjeg eturipcu votumleb he cod hatna gemroh cilji kanji. Hetzeena "
+                     "reventu lav votabi holtiw ne jolilku evna ke ke uneodunu obasigel. "
+                     "Ecizo ciipu tumzezes ujo bo alcum liv ofi fotva vivhotok newo "
+                     "kulamokab zenhim besro zimowi leajo. Osuwo giner ohmindop sejin ceg "
+                     "nosezmop abo apiku weg bod ret ecu pavrom bag. Dod sezrizke gejud "
+                     "fowdep abfugre tidwirku lias riset kod ikolazbo cadre geva zeraz "
+                     "haci jutamo pudu tebu nagivcin.");
+  chaine_0.afficher();
+
   chaine_1.affecter("");
   chaine_1.concatenation(Chaine("1"));
   chaine_1.concatenation(Chaine(" 2"));
