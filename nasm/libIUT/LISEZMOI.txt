@@ -1,0 +1,75 @@
+=============================
+= INSTALLATION DE LA LIBIUT =
+=============================
+
+Pour compiler la libIUT, vous devez suivre les étapes suivantes.
+
+Etape 0 : décompresser les fichiers source
+Avec votre dézipeur préféré (7z, WinZip, etc.).
+
+Etape 1 : compiler PDCurses
+===========================
+Cette étape n'est nécessaire que si vous êtes sous Windows. Si vous êtes sous
+Linux, installez libncurses (New Curses) avec votre gestionnaire de paquetage
+préféré (Synaptics, apt-get, etc.) et passez directement à l'étape 2.
+
+Allez dans le sous-répertoire win32 de PDCurses-3.4 :
+cd libIUT-v3\PDCurses-3.4\win32
+
+Il vous faut que vous ayez installé la commande make de MinGW. Si nécessaire,
+tapez :
+mingw-get install mingw32-make
+
+Pour compiler PDCurses avec MinGW32 gcc, tapez maintenant :
+mingw32-make -f mingwin32.mak
+
+Normalement vous avez obtenu le fichier plusieurs executables que vous pouvez
+essayer. Par exemple ptest.exe, tapez :
+ptest
+
+Vous avez également obtenu, et c'est ça qui nous intéresse, le fichier
+pdcurses.a qui sera nécessaire à l'étape suivante.
+
+A partir d'ici, quand on demande de lancer la commande "make", il faudra sous
+Windows lancer "mingw32-make" comme dans ce qui précède : pour éviter tout
+conflit avec une commande "make" fournie par ailleurs, les fabriquants de MinGW
+ont choisit d'appeler leur commande make ainsi...
+
+Etape 2 : compiler la libIUT
+============================
+Allez dans le répertoire libIUT-v3.
+cd libIUT-v3
+
+Sous Linux, tapez :
+make -f Makefile.UNIX
+
+Sous Windows, tapez :
+mingw32-make -f Makefile.MinGW32
+
+Sous Windows, la bibliothèque pdcurses.a se retrouve renomée en libIUT.a avec
+les éléments suplémentaires. Sous Linux, seuls les éléments suplémentaires sont
+présents dans la bibliothèque, et c'est pour cela que vous devrez lier vos
+futurs programmes avec NewCurses en ajoutant -lncurses à votre ligne d'édition
+de liens.
+
+Etape 3 : tests
+===============
+Les quatre exemples fournis et quelques anciennes intéros vous donnent plusieurs
+démonstrations de ce qu'il est possible de faire avec la bibliothèque.
+
+Pour plus de manipulations, apprenez à vous servir de la commande
+(mingw32-)make. Vous trouverez plein d'aide à ce sujet sur Internet.
+
+Etape 4 : utilisation
+=====================
+Pour utiliser la bibliothèque pour vos TP, placez vous dans le répertoire
+libIUT-v3 pour travailler, ou bien replacer -I. et -L. par
+-I<chemin-de-libIUT-v3> et -L<chemin-de-libIUT-v3> dans vos commandes de
+compilation de TP.
+
+-------------------------------------------------------------------------------
+libIUT-v3.1 E. Remy - 02/2015
+libIUT-v3   E. Remy - 11/2010
+libIUT-v2   E. Remy - ??/2004
+libIUT-v1   E. Remy - ??/2003
+

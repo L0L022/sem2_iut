@@ -19,3 +19,4 @@ msg1:	db	"Ce programme teste les differentes fonctions de sortie existantes.",10
 	db	"Vous devez voir '123456' write_uint : ",0
 
 msg2:	db	"Les autres tests ne sont pas encore implantes.",10,0
+
