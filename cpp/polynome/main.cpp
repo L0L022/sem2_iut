@@ -1,33 +1,27 @@
 #include <iostream>
 #include "Polynome.hpp"
-#include <string>
-#include <iconv.h>
 
 using namespace std;
 
-const string exposant[] {
-  "",
-  "",
-  "²",
-  "³",
-  "⁴",
-  "⁵",
-  "⁶",
-  "⁷",
-  "⁸",
-  "⁹"
-};
-
 int main() {
-  iconv_t cd = iconv_open("UTF−16", "UTF−8");
+  const double coefs[] = {4, -2, 3, 1, -2};
+  Polynome poly(4, coefs);
 
-  char ** blabla = {{20, 74}}, ** blabla_retour = new char[10];
-  size_t taille = 1, taille_retour = 10;
-  size_t retour = iconv(cd, blabla, &taille, blabla_retour, &taille_retour);
+  cout << "poly : " << poly << endl;
 
-  iconv_close(cd);
+  const double pos_coefs[] = {4, 2, 3, 1, 2};
+  Polynome pos_poly(4, pos_coefs);
 
-  cout << blabla_retour << endl;
+  cout << "pos_poly : " << pos_poly << endl;
+
+  const double neg_coefs[] = {-4, -2, -3, -1, -2};
+  Polynome neg_poly(4, neg_coefs);
+
+  cout << "neg_poly : " << neg_poly << endl;
+
+  cout << "poly + pos_poly : " << poly + pos_poly << endl;
+  cout << "poly + neg_poly : " << poly + neg_poly << endl;
+  cout << "pos_poly + neg_poly : " << pos_poly + neg_poly << endl;
 
   return 0;
 }
