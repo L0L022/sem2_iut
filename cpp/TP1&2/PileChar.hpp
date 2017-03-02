@@ -12,6 +12,10 @@ public:
 	char tete() const;
 	size_t taille() const;
 	size_t taille_buffer() const;
+	void afficher(std::ostream &out) const;
+
+	char sommet() const;
+	size_t compter() const;
 
 private:
 	size_t _taille, _taille_max;

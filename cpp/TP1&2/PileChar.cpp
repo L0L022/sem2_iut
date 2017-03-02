@@ -46,9 +46,20 @@ size_t PileChar::taille_buffer() const {
 	return _taille_max;
 }
 
+void PileChar::afficher(ostream &out) const {
+	for(size_t i = 0; i < _taille; ++i)
+		out << _buffer[i];
+}
+
+char PileChar::sommet() const {
+	return tete();
+}
+
+size_t PileChar::compter() const {
+	return taille();
+}
+
 std::ostream& operator<<(std::ostream &out, const PileChar &pileChar) {
-	//out << pileChar.tete();
-	for(size_t i = 0; i < pileChar._taille; ++i)
-		out << pileChar._buffer[i];
+	out << pileChar.tete();
 	return out;
 }

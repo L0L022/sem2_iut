@@ -36,6 +36,12 @@ string verifie(istream &input) {
         else
           no_problem = false;
         break;
+      case '"':
+        if(pile.taille() > 0 && pile.tete() == '"')
+          pile.depiler();
+        else
+          pile.empiler('"');
+        break;
       case '\n':
         ++nb_ligne;
         break;

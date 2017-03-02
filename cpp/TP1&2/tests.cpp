@@ -4,7 +4,9 @@
 using namespace std;
 
 void affiche(const PileChar &pile) {
-	cout << "pile, taille: " << pile.taille() << " taille buffer: " << pile.taille_buffer() << " buffer: " << pile << endl;
+	cout << "pile, taille: " << pile.taille() << " taille buffer: " << pile.taille_buffer() << " buffer: ";
+	pile.afficher(cout);
+	cout << endl;
 }
 
 int main() {
