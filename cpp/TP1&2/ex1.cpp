@@ -3,13 +3,27 @@
 
 using namespace std;
 
-void afficher(PileChar &pile) {
-  for(; pile.taille() >= 1; pile.depiler())
+void afficher_inverse(PileChar &pile) {
+  for(; pile.taille() > 0; pile.depiler())
     cout << pile;
   cout << endl;
 }
 
-void inverse() {
+void afficher_chiffre(PileChar &pile) {
+  char c;
+  for(; pile.taille() > 0; pile.depiler()) {
+    if(pile.taille() > 2) {
+      c = pile.tete();
+      pile.depiler();
+      cout << pile.tete() << c;
+    } else {
+      cout << pile.tete();
+    }
+  }
+  cout << endl;
+}
+
+int main() {
   PileChar saisie;
 
   char c;
@@ -20,31 +34,12 @@ void inverse() {
   } while(c != '.');
   saisie.depiler();
 
-  afficher(saisie);
-}
+  PileChar saisie_copie(saisie);
 
-void chiffre() {
-  PileChar saisie;
+  cout << "inverse :" << endl;
+  afficher_inverse(saisie);
+  cout << "chiffre :" << endl;
+  afficher_chiffre(saisie_copie);
 
-  char c[2] = {'\0', '\0'};
-  do {
-    cin.get(c[0]);
-    if(c[0] != '\n') {
-      if(c[1] == '\0')
-        c[1] = c[0];
-      else {
-        saisie.empiler(c[0]);
-        saisie.empiler(c[1]);
-        c[1]='\0';
-      }
-    }
-  } while(c[0] != '.');
-  saisie.depiler();
-
-  afficher(saisie);
-}
-
-int main() {
-  chiffre();
   return 0;
 }

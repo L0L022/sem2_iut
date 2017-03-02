@@ -10,6 +10,7 @@ PileChar::PileChar(const size_t _taille) : _taille(0), _taille_max(_taille), _bu
 PileChar::PileChar(const PileChar &origine) : PileChar(origine._taille_max) {
 	for(size_t i = 0; i < _taille_max; ++i)
 		_buffer[i] = origine._buffer[i];
+	_taille = origine._taille;
 }
 
 PileChar::~PileChar() {
@@ -46,8 +47,8 @@ size_t PileChar::taille_buffer() const {
 }
 
 std::ostream& operator<<(std::ostream &out, const PileChar &pileChar) {
-	out << pileChar.tete();
-	// for(size_t i = 0; i < pileChar._taille; ++i)
-	// 	out << pileChar._buffer[i];
+	//out << pileChar.tete();
+	for(size_t i = 0; i < pileChar._taille; ++i)
+		out << pileChar._buffer[i];
 	return out;
 }
