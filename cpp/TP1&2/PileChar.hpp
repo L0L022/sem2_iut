@@ -10,7 +10,6 @@ public:
 	void depiler();
 
 	char tete() const;
-	char &tete();
 	size_t taille() const;
 	size_t taille_buffer() const;
 

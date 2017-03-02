@@ -29,9 +29,5 @@ int main() {
 
 	cout << "pile tete: " << pile_0.tete() << " " << pile_1.tete() << " " << pile_2.tete() << endl;
 
-	pile_0.tete() = 'A';
-
-	cout << "pile tete: " << pile_0.tete() << " " << pile_1.tete() << " " << pile_2.tete() << endl;
-
 	return 0;
 }

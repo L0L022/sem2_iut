@@ -24,17 +24,13 @@ void PileChar::empiler(const char c) {
 }
 
 void PileChar::depiler() {
-	if(_taille - 1 > 0)
+	if(_taille > 0)
 		--_taille;
 	else
 		throw runtime_error("Pile vide");
 }
 
 char PileChar::tete() const {
-	return tete();
-}
-
-char &PileChar::tete() {
 	if(_taille > 0)
 		return _buffer[_taille-1];
 	else
@@ -50,8 +46,8 @@ size_t PileChar::taille_buffer() const {
 }
 
 std::ostream& operator<<(std::ostream &out, const PileChar &pileChar) {
-	// en vrai ca devrait être tete
-	for(size_t i = 0; i < pileChar._taille; ++i)
-		out << pileChar._buffer[i];
+	out << pileChar.tete();
+	// for(size_t i = 0; i < pileChar._taille; ++i)
+	// 	out << pileChar._buffer[i];
 	return out;
 }
