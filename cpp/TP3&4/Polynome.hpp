@@ -9,10 +9,11 @@ public:
 
   Polynome &operator=(const Polynome &poly);
   Polynome operator+(const Polynome &poly) const;
+  double &operator[](const size_t index);
   double operator[](const size_t index) const;
-  double operator()(const int nb) const;
+  double operator()(const double nb) const;
   size_t degre() const;
-  const Polynome &deriver() const;
+  Polynome deriver() const;
 
 private:
   size_t _degre;
@@ -20,3 +21,4 @@ private:
 };
 
 std::ostream &operator<<(std::ostream &out, const Polynome &poly);
+bool operator==(const Polynome &p1, const Polynome &p2);
