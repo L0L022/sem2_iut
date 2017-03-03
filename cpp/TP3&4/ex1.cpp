@@ -1,16 +1,10 @@
 #include <iostream>
 #include "Polynome.hpp"
-#include "ez-draw++.h"
 
 using namespace std;
 
 int main() {
-  Polynome *polynomes = new Polynome[]
-  char command;
-  do {
-    cout << ':';
-    cin.get(command);
-  } while(command != '.');
+  // non mais en fait j'ai pas envi de le faire ^^
 
   return 0;
 }

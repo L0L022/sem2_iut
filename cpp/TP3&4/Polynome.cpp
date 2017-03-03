@@ -1,6 +1,7 @@
 #include "Polynome.hpp"
-#include <string>
 #include <cmath>
+
+const std::string Polynome::_exposant[] = {"", "", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"};
 
 Polynome::Polynome(const size_t degre, const double coefs[])
     : _degre(degre), _coefs(nullptr) {
@@ -67,25 +68,33 @@ Polynome Polynome::deriver() const {
   return derivee;
 }
 
-const std::string exposant[]{"", "", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"};
+std::string Polynome::formule() const {
+  std::string resultat;
+
+  for (size_t degre = _degre; degre >= 1; --degre) {
+    if (_coefs[degre] != 0) {
+      if (_coefs[degre] == 1)
+        resultat += "";
+      else if (_coefs[degre] == -1)
+        resultat += '-';
+      else
+        resultat += std::to_string(_coefs[degre]);
+
+      resultat += 'x';
+      resultat += _exposant[degre];
+    }
+    if (_coefs[degre - 1] > 0)
+      resultat += '+';
+  }
+  if(_coefs[0] != 0) {
+    resultat += std::to_string(_coefs[0]) + _exposant[0];
+  }
+
+  return resultat;
+}
 
 std::ostream &operator<<(std::ostream &out, const Polynome &poly) {
-  for (size_t degre = poly.degre(); degre >= 1; --degre) {
-    if (poly[degre] != 0) {
-      if (poly[degre] == 1)
-        out << "";
-      else if (poly[degre] == -1)
-        out << '-';
-      else
-        out << poly[degre];
-
-      out << 'x' << exposant[degre];
-    }
-    if (poly[degre - 1] > 0)
-      out << '+';
-  }
-  if(poly[0] != 0)
-    out << poly[0] << exposant[0];
+  out << poly.formule();
   return out;
 }
 

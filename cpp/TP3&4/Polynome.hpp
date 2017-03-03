@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 class Polynome {
 public:
@@ -14,10 +15,12 @@ public:
   double operator()(const double nb) const;
   size_t degre() const;
   Polynome deriver() const;
+  std::string formule() const;
 
 private:
   size_t _degre;
   double *_coefs;
+  static const std::string _exposant[];
 };
 
 std::ostream &operator<<(std::ostream &out, const Polynome &poly);
