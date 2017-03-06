@@ -4,7 +4,7 @@
 using namespace std;
 
 int main() {
-  // non mais en fait j'ai pas envi de le faire ^^
+  // non mais en fait j'ai pas envie de le faire ^^
 
   return 0;
 }

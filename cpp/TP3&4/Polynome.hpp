@@ -1,3 +1,6 @@
+#ifndef __SUPERPOLYNOME__
+#define __SUPERPOLYNOME__
+
 #include <iostream>
 #include <string>
 
@@ -28,3 +31,5 @@ private:
 
 std::ostream &operator<<(std::ostream &out, const Polynome &poly);
 bool operator==(const Polynome &p1, const Polynome &p2);
+
+#endif

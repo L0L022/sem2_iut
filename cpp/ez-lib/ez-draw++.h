@@ -6,6 +6,7 @@ extern "C" {
 }
 
 class EZWindow {
+protected:
  static void dispatch(Ez_event *ev);
  Ez_window win;
  Ez_event* current_event;
@@ -22,7 +23,7 @@ public:
         void             setVisible   (bool visible=true);
         void             clear        () const;
  inline void             setColor     (unsigned long color)      { ez_set_color(color); }
- inline void             setThick     (int thick=1)              { ez_set_thick(thick); }     
+ inline void             setThick     (int thick=1)              { ez_set_thick(thick); }
  inline unsigned long    getRGB       (unsigned char r, unsigned char g, unsigned char b) const { return ez_get_RGB(r,g,b); }
  inline unsigned long    getGrey      (unsigned long g) const    { return ez_get_grey(g); }
  inline int              loadFont     (int num,const char *name) { return ez_font_load(num,name); }
@@ -67,4 +68,3 @@ public:
  inline static int  random(int n)           { return ez_random(n); }
  inline EZWindow* recoverEZWindow(Ez_window w) { return windows[w]; } // Ne pas utiliser.
 };
-
