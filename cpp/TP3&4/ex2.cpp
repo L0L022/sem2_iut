@@ -172,10 +172,13 @@ int main(int /*argc*/, char * /*argv*/ []) {
           "coordonnees."
        << endl;
 
-  double coef[] = {0, 0, 0, 0, 1};
-  Polynome p1(4, coef);
+  const double coef_p1[] = {3, -1.414, 3, 6, 0, 1};
+  Polynome p1(5, coef_p1);
+  Traceur wp1(640, 480, p1.formule_ascii().c_str(), &p1, -10, 10, -10, 10, 3);
 
-  Traceur wp1(640, 480, p1.formule().c_str(), &p1, -1., +3., -0.3, +0.5, 3);
+  const double coef_p2[] = {4, -2, 3, 1, -2};
+  Polynome p2(4, coef_p2);
+  Traceur wp2(640, 480, p2.formule_ascii().c_str(), &p2, -10, 10, -10, 10, 3);
 
   application.mainLoop();
 
