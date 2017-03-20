@@ -1,0 +1,1 @@
+sed "s|\(.*\)\t\(.*\)\t\(.*\)|INSERT INTO tp2_bd_voyage.capacite VALUES ((SELECT id_hotel FROM tp2_bd_voyage.hotel WHERE NomHotel = '\1'), '\2', \3);|g" tableaux\ des\ capacités\ pour\ la\ Q4.tsv > insert_Q4.sql

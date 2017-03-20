@@ -102,3 +102,73 @@ INSERT INTO tp2_bd_voyage.capacite VALUES ((SELECT id_hotel FROM tp2_bd_voyage.h
 INSERT INTO tp2_bd_voyage.capacite VALUES ((SELECT id_hotel FROM tp2_bd_voyage.hotel WHERE NomHotel = 'MONDIAL'), 'Double', 13);
 INSERT INTO tp2_bd_voyage.capacite VALUES ((SELECT id_hotel FROM tp2_bd_voyage.hotel WHERE NomHotel = 'KENZI CLUB'), 'Single', 45);
 INSERT INTO tp2_bd_voyage.capacite VALUES ((SELECT id_hotel FROM tp2_bd_voyage.hotel WHERE NomHotel = 'KENZI CLUB'), 'Double', 67);
+
+-- II
+
+-- 1
+
+UPDATE tp2_bd_voyage.reservation
+SET nbenf = 2
+WHERE numcl = 2103;
+
+UPDATE tp2_bd_voyage.reservation
+SET nbenf = 1
+WHERE numcl = (
+  SELECT numcl
+  FROM tp2_bd_voyage.client
+  WHERE nom = 'JAROLIM' and prenom = 'THOMAS'
+);
+
+-- 2
+
+UPDATE tp2_bd_voyage.planning
+SET tarifenf = tarif / 2;
+
+-- 3
+
+INSERT INTO tp2_bd_voyage.client VALUES ((SELECT MAX(numcl) + 1 FROM tp2_bd_voyage.client), 'ESCALES', 'LOÏC', NULL, NULL, 'ARLES', 'PRIVILEGIE');
+INSERT INTO tp2_bd_voyage.client VALUES ((SELECT MAX(numcl) + 1 FROM tp2_bd_voyage.client), 'DOITEAU', 'LAURENT', NULL, NULL, 'ARLES', 'BON');
+
+INSERT INTO tp2_bd_voyage.reservation VALUES ((
+  SELECT numcl
+  FROM tp2_bd_voyage.client
+  WHERE nom = 'DOITEAU' and prenom = 'LAURENT'
+  ),(
+    SELECT idv
+    FROM tp2_bd_voyage.voyage
+    WHERE villedep = 'MARSEILLE' and paysarr = 'MAROC' and duree = 4 and id_hotel = (
+      SELECT id_hotel
+      FROM tp2_bd_voyage.hotel
+      WHERE nomhotel = 'ATLAS' and nbetoile = 4 and villehotel = 'AGADIR'
+      )
+    ) ,(
+      SELECT MAX(datedep)
+      FROM tp2_bd_voyage.planning
+      WHERE idv = (
+        SELECT idv
+        FROM tp2_bd_voyage.voyage
+        WHERE villedep = 'MARSEILLE' and paysarr = 'MAROC' and duree = 4 and id_hotel = (
+          SELECT id_hotel
+          FROM tp2_bd_voyage.hotel
+          WHERE nomhotel = 'ATLAS' and nbetoile = 4 and villehotel = 'AGADIR'
+          )
+        )
+      ), 1, (
+        SELECT MAX(datedep)
+        FROM tp2_bd_voyage.planning
+        WHERE idv = (
+          SELECT idv
+          FROM tp2_bd_voyage.voyage
+          WHERE villedep = 'MARSEILLE' and paysarr = 'MAROC' and duree = 4 and id_hotel = (
+            SELECT id_hotel
+            FROM tp2_bd_voyage.hotel
+            WHERE nomhotel = 'ATLAS' and nbetoile = 4 and villehotel = 'AGADIR'
+          )
+        )
+        ) - 10, 9);
+
+-- 4
+
+-- IMPOSSIBLE !!!
+-- UPDATE tp2_bd_voyage.hotel
+-- SET nbetoile = 6
