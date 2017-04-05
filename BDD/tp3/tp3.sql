@@ -64,3 +64,43 @@ AS (
 -- Q2
 
 -- A
+
+CREATE RULE rule_A
+AS ON UPDATE TO tp_gite_de_france.view_location
+DO INSTEAD (
+  UPDATE tp_gite_de_france.louer
+  SET duree = NEW.duree_loc,
+      nbper = NEW.nbper
+  WHERE numgite = NEW.numgite AND numcli = NEW.numcl AND date_debut = NEW.date_loc AND NEW.nbper <= (
+    SELECT nbpers
+    FROM tp_gite_de_france.gites
+    WHERE numgite = NEW.numgite
+  )
+);
+
+-- B
+
+CREATE RULE rule_B
+AS ON DELETE TO tp_gite_de_france.view_location
+DO INSTEAD (
+  DELETE FROM tp_gite_de_france.facturer WHERE numgite = OLD.numgite;
+  DELETE FROM tp_gite_de_france.chambres WHERE numgite = OLD.numgite;
+  DELETE FROM tp_gite_de_france.proposer_par WHERE numgite = OLD.numgite;
+  DELETE FROM tp_gite_de_france.proposer WHERE numgite = OLD.numgite;
+  DELETE FROM tp_gite_de_france.louer WHERE numgite = OLD.numgite;
+  DELETE FROM tp_gite_de_france.gites WHERE numgite = OLD.numgite;
+);
+
+-- C
+
+CREATE RULE rule_C
+AS ON INSERT TO tp_gite_de_france.gites
+WHERE NEW.numgite IN (
+  SELECT numgite
+  FROM tp_gite_de_france.gites
+)
+DO INSTEAD (
+  UPDATE tp_gite_de_france.gites
+  SET (nomgite, adrgite, cpgite, villegite, telgite, description, numprop, superficiegit, nbepis, nbpers) = (NEW.nomgite, NEW.adrgite, NEW.cpgite, NEW.villegite, NEW.telgite, NEW.description, NEW.numprop, NEW.superficiegit, NEW.nbepis, NEW.nbpers)
+  WHERE numgite = NEW.numgite
+);
