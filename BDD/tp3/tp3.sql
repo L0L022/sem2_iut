@@ -104,3 +104,31 @@ DO INSTEAD (
   SET (nomgite, adrgite, cpgite, villegite, telgite, description, numprop, superficiegit, nbepis, nbpers) = (NEW.nomgite, NEW.adrgite, NEW.cpgite, NEW.villegite, NEW.telgite, NEW.description, NEW.numprop, NEW.superficiegit, NEW.nbepis, NEW.nbpers)
   WHERE numgite = NEW.numgite
 );
+
+-- Q3
+
+-- 1
+
+SELECT numgite, nbpers, (
+  SELECT SUM(nblits)
+  FROM tp_gite_de_france.chambres
+  WHERE numgite = G.numgite
+) AS "nb lits simples", (
+  SELECT SUM(nblitdo)
+  FROM tp_gite_de_france.chambres
+  WHERE numgite = G.numgite
+) AS "nb lits doubles", (
+  SELECT SUM(nblits)+SUM(nblitdo)*2
+  FROM tp_gite_de_france.chambres
+  WHERE numgite = G.numgite
+) AS "capacite couchage"
+FROM tp_gite_de_france.gites AS G;
+
+-- 2
+
+UPDATE tp_gite_de_france.gites AS G
+SET nbpers = (
+  SELECT SUM(nblits)+SUM(nblitdo)*2
+  FROM tp_gite_de_france.chambres
+  WHERE numgite = G.numgite
+);
