@@ -85,9 +85,6 @@ SELECT * FROM tour_Effectue(14);
 
 -- 3 2
 
-SELECT *
-FROM CTRL2_formule1.bareme
-
 CREATE or REPLACE FUNCTION point_acquis(DATE, INTEGER) RETURNS INT AS $$
   DECLARE
     i INTEGER;
