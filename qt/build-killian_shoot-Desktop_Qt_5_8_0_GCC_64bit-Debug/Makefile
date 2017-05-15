@@ -51,11 +51,15 @@ OBJECTS_DIR   = ./
 SOURCES       = ../killian_shoot/main.cpp \
 		../killian_shoot/mainwindow.cpp \
 		../killian_shoot/player.cpp \
-		../killian_shoot/item.cpp moc_mainwindow.cpp
+		../killian_shoot/item.cpp \
+		../killian_shoot/enemy.cpp \
+		../killian_shoot/bullet.cpp moc_mainwindow.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
 		player.o \
 		item.o \
+		enemy.o \
+		bullet.o \
 		moc_mainwindow.o
 DIST          = /var/tmp/Qt/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		/var/tmp/Qt/5.8/gcc_64/mkspecs/common/unix.conf \
@@ -184,6 +188,7 @@ DIST          = /var/tmp/Qt/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		/var/tmp/Qt/5.8/gcc_64/mkspecs/features/qt_config.prf \
 		/var/tmp/Qt/5.8/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/var/tmp/Qt/5.8/gcc_64/mkspecs/features/spec_post.prf \
+		../killian_shoot/.qmake.stash \
 		/var/tmp/Qt/5.8/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/var/tmp/Qt/5.8/gcc_64/mkspecs/features/toolchain.prf \
 		/var/tmp/Qt/5.8/gcc_64/mkspecs/features/default_pre.prf \
@@ -205,10 +210,14 @@ DIST          = /var/tmp/Qt/5.8/gcc_64/mkspecs/features/spec_pre.prf \
 		/var/tmp/Qt/5.8/gcc_64/mkspecs/features/lex.prf \
 		../killian_shoot/killian_shoot.pro ../killian_shoot/mainwindow.h \
 		../killian_shoot/player.h \
-		../killian_shoot/item.h ../killian_shoot/main.cpp \
+		../killian_shoot/item.h \
+		../killian_shoot/enemy.h \
+		../killian_shoot/bullet.h ../killian_shoot/main.cpp \
 		../killian_shoot/mainwindow.cpp \
 		../killian_shoot/player.cpp \
-		../killian_shoot/item.cpp
+		../killian_shoot/item.cpp \
+		../killian_shoot/enemy.cpp \
+		../killian_shoot/bullet.cpp
 QMAKE_TARGET  = killian_shoot
 DESTDIR       = 
 TARGET        = killian_shoot
@@ -347,6 +356,7 @@ Makefile: ../killian_shoot/killian_shoot.pro /var/tmp/Qt/5.8/gcc_64/mkspecs/linu
 		/var/tmp/Qt/5.8/gcc_64/mkspecs/features/qt_config.prf \
 		/var/tmp/Qt/5.8/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/var/tmp/Qt/5.8/gcc_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/var/tmp/Qt/5.8/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/var/tmp/Qt/5.8/gcc_64/mkspecs/features/toolchain.prf \
 		/var/tmp/Qt/5.8/gcc_64/mkspecs/features/default_pre.prf \
@@ -498,6 +508,7 @@ Makefile: ../killian_shoot/killian_shoot.pro /var/tmp/Qt/5.8/gcc_64/mkspecs/linu
 /var/tmp/Qt/5.8/gcc_64/mkspecs/features/qt_config.prf:
 /var/tmp/Qt/5.8/gcc_64/mkspecs/linux-g++/qmake.conf:
 /var/tmp/Qt/5.8/gcc_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /var/tmp/Qt/5.8/gcc_64/mkspecs/features/exclusive_builds.prf:
 /var/tmp/Qt/5.8/gcc_64/mkspecs/features/toolchain.prf:
 /var/tmp/Qt/5.8/gcc_64/mkspecs/features/default_pre.prf:
@@ -536,8 +547,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /var/tmp/Qt/5.8/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../killian_shoot/mainwindow.h ../killian_shoot/player.h ../killian_shoot/item.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../killian_shoot/main.cpp ../killian_shoot/mainwindow.cpp ../killian_shoot/player.cpp ../killian_shoot/item.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../killian_shoot/mainwindow.h ../killian_shoot/player.h ../killian_shoot/item.h ../killian_shoot/enemy.h ../killian_shoot/bullet.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../killian_shoot/main.cpp ../killian_shoot/mainwindow.cpp ../killian_shoot/player.cpp ../killian_shoot/item.cpp ../killian_shoot/enemy.cpp ../killian_shoot/bullet.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -676,11 +687,21 @@ moc_mainwindow.cpp: /var/tmp/Qt/5.8/gcc_64/include/QtWidgets/QMainWindow \
 		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qtouchdevice.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qtabwidget.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qicon.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/QTimer \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qtimer.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qbasictimer.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtCore/QElapsedTimer \
 		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qelapsedtimer.h \
-		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/QGraphicsScene \
-		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qgraphicsscene.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/QGraphicsView \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qgraphicsview.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qpainter.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qtextoption.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qpen.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qscrollarea.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qgraphicsscene.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/QGraphicsScene \
 		../killian_shoot/player.h \
 		../killian_shoot/item.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/QGraphicsItem \
@@ -809,11 +830,21 @@ main.o: ../killian_shoot/main.cpp ../killian_shoot/mainwindow.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qtouchdevice.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qtabwidget.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qicon.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/QTimer \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qtimer.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qbasictimer.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtCore/QElapsedTimer \
 		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qelapsedtimer.h \
-		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/QGraphicsScene \
-		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qgraphicsscene.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/QGraphicsView \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qgraphicsview.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qpainter.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qtextoption.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qpen.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qscrollarea.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qgraphicsscene.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/QGraphicsScene \
 		../killian_shoot/player.h \
 		../killian_shoot/item.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/QGraphicsItem \
@@ -932,15 +963,31 @@ mainwindow.o: ../killian_shoot/mainwindow.cpp ../killian_shoot/mainwindow.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qtouchdevice.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qtabwidget.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qicon.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/QTimer \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qtimer.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qbasictimer.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtCore/QElapsedTimer \
 		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qelapsedtimer.h \
-		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/QGraphicsScene \
-		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qgraphicsscene.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/QGraphicsView \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qgraphicsview.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qpainter.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qtextoption.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qpen.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qscrollarea.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qframe.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qgraphicsscene.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/QGraphicsScene \
 		../killian_shoot/player.h \
 		../killian_shoot/item.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/QGraphicsItem \
-		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qgraphicsitem.h
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qgraphicsitem.h \
+		../killian_shoot/enemy.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/QKeyEvent \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/QTime \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qdatetime.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/QDebug \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/QTypeInfo
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../killian_shoot/mainwindow.cpp
 
 player.o: ../killian_shoot/player.cpp ../killian_shoot/player.h \
@@ -1119,8 +1166,104 @@ item.o: ../killian_shoot/item.cpp ../killian_shoot/item.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qrgba64.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qimage.h \
 		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qpixelformat.h \
-		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qtransform.h
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qtransform.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/QVector2D \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qvector2d.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/QDebug
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o item.o ../killian_shoot/item.cpp
+
+enemy.o: ../killian_shoot/enemy.cpp ../killian_shoot/enemy.h \
+		../killian_shoot/item.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/QGraphicsItem \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qgraphicsitem.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qtguiglobal.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qglobal.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qconfig.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qtcore-config.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qsystemdetection.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qprocessordetection.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qcompilerdetection.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qtypeinfo.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qsysinfo.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qlogging.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qflags.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qtypetraits.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qatomic.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qbasicatomic.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qgenericatomic.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qatomic_msvc.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qglobalstatic.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qmutex.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qnumeric.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qversiontagging.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qtgui-config.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qobject.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qobjectdefs.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qnamespace.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qstring.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qchar.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qbytearray.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qrefcount.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qarraydata.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qstringbuilder.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qlist.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qalgorithms.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qiterator.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qhashfunctions.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qpair.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qbytearraylist.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qstringlist.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qregexp.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qstringmatcher.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qcoreevent.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qscopedpointer.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qmetatype.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qvarlengtharray.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qcontainerfwd.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qobject_impl.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qvariant.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qmap.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qdebug.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qhash.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qtextstream.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qiodevice.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qlocale.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qshareddata.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qvector.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qpoint.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qset.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qcontiguouscache.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qsharedpointer.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qrect.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qmargins.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qsize.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qpainterpath.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qmatrix.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qpolygon.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qregion.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qwindowdefs.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qdatastream.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtCore/qline.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qpixmap.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qpaintdevice.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qcolor.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qrgb.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qrgba64.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qimage.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qpixelformat.h \
+		/var/tmp/Qt/5.8/gcc_64/include/QtGui/qtransform.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o enemy.o ../killian_shoot/enemy.cpp
+
+bullet.o: ../killian_shoot/bullet.cpp ../killian_shoot/bullet.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o bullet.o ../killian_shoot/bullet.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
