@@ -28,10 +28,14 @@ SOURCES += main.cpp\
     player.cpp \
     item.cpp \
     enemy.cpp \
-    bullet.cpp
+    bullet.cpp \
+    targetenemy.cpp \
+    randomenemy.cpp
 
 HEADERS  += mainwindow.h \
     player.h \
     item.h \
     enemy.h \
-    bullet.h
+    bullet.h \
+    targetenemy.h \
+    randomenemy.h

@@ -1,10 +1,12 @@
 #include "mainwindow.h"
 #include "enemy.h"
+#include "targetenemy.h"
+#include "randomenemy.h"
 #include "bullet.h"
 #include <QKeyEvent>
 #include <QTime>
+#include <QOpenGLWidget>
 #include <QDebug>
-#include <typeinfo>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -15,13 +17,17 @@ MainWindow::MainWindow(QWidget *parent)
       m_player(nullptr),
       m_keys(Item::NONE)
 {
-    m_player = new Player(nullptr);
+    resize(500, 500);
+
+    m_view = new QGraphicsView(this);
+    m_view->setFocusPolicy(Qt::NoFocus);
+    //m_view->setViewport(new QOpenGLWidget());
 
     m_scene = new QGraphicsScene(this);
-    m_scene->addItem(m_player);
+    m_view->setScene(m_scene);
 
-    m_view = new QGraphicsView(m_scene, this);
-    m_view->setFocusPolicy(Qt::NoFocus);
+    m_player = new Player();
+    m_scene->addItem(m_player);
 
     connect(&m_timer, &QTimer::timeout, this, &MainWindow::updateGame);
 
@@ -32,9 +38,15 @@ MainWindow::MainWindow(QWidget *parent)
     setFocusPolicy(Qt::StrongFocus);
     setCentralWidget(m_view);
 
-    m_scene->addItem(new Enemy());
-    m_scene->addItem(new Enemy());
-    m_scene->addItem(new Enemy());
+    for (int i = 0; i < 20; ++i) {
+        Enemy *enemy = nullptr;
+        if (qrand()%2 == 0)
+            enemy = new TargetEnemy(m_player);
+        else
+            enemy = new RandomEnemy();
+        m_scene->addItem(enemy);
+        enemy->setPos(qrand()%600, qrand()%600);
+    }
 }
 
 MainWindow::~MainWindow()
@@ -53,7 +65,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         m_keys |= Item::LEFT;
 
     if (event->key() == Qt::Key_Space)
-        m_scene->addItem(new Bullet()); // add direction
+        m_player->shoot();
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event)
@@ -72,17 +84,20 @@ void MainWindow::updateGame()
 {
     float time = m_elapsedTime.restart()*0.001;
     m_player->move(m_keys, time);
+
     for (QGraphicsItem *item : m_scene->items()) {
-        if (typeid(*item) == typeid(Enemy)) {
-            Enemy *enemy = qgraphicsitem_cast<Enemy*>(item);
-            enemy->move(Item::DOWN | Item::NONE, time);
-        }
-        if (typeid(*item) == typeid(Item)) {
-            Item *it = qgraphicsitem_cast<Item*>(item);
+//        Enemy *enemy = dynamic_cast<Enemy*>(item);
+//        if (enemy)
+//            enemy->move(Item::DOWN, time);
+        Item *it = dynamic_cast<Item*>(item);
+        if (it && it->type() != Item::PlayerType) {
+            it->update(time);
             if (it->isDie()) {
                 m_scene->removeItem(it);
                 delete it;
             }
         }
     }
+    m_view->setSceneRect(QRectF(m_player->x() - width()/2.f, m_player->y() - height()/2.f, width(), height()));
+    //m_view->centerOn(m_player);
 }

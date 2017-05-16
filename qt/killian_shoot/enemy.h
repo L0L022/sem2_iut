@@ -8,6 +8,8 @@ class Enemy : public Item
 public:
     Enemy(QGraphicsItem *parent = nullptr);
     ~Enemy();
+
+    int type() const;
 };
 
 #endif // ENEMY_H
