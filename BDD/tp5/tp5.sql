@@ -86,3 +86,94 @@ CREATE or REPLACE FUNCTION job(INTEGER) RETURNS VARCHAR AS $$
 LANGUAGE plpgsql;
 
 SELECT job(idArtiste) FROM tp_bd_film.artiste;
+
+-- 4
+
+CREATE OR REPLACE FUNCTION check_note() RETURNS TRIGGER AS $$
+BEGIN
+  PERFORM email
+  FROM tp_bd_film.internaute
+  WHERE email = NEW.email;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'internaute % n existe pas', NEW.email;
+  END IF;
+
+  PERFORM idFilm
+  FROM tp_bd_film.film
+  WHERE idFilm = NEW.idFilm;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'film % n existe pas', NEW.idFilm;
+  END IF;
+
+  PERFORM *
+  FROM tp_bd_film.notation
+  WHERE email = NEW.email AND idFilm = NEW.idFilm;
+
+  IF FOUND THEN
+    RAISE EXCEPTION 'internaute % a déjà noté le film %', NEW.email, NEW.idFilm;
+  END IF;
+
+  RETURN NEW;
+END; $$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER check_note BEFORE INSERT ON tp_bd_film.notation FOR EACH
+ROW EXECUTE PROCEDURE check_note();
+
+INSERT INTO tp_bd_film.notation VALUES (41, 'eeeeee@eeeee.fr', 4);
+INSERT INTO tp_bd_film.notation VALUES (410, 'waller@lri.fr', 4);
+INSERT INTO tp_bd_film.notation VALUES (4, 'waller@lri.fr', 4);
+INSERT INTO tp_bd_film.notation VALUES (41, 'waller@lri.fr', 3);
+
+-- 5
+
+CREATE OR REPLACE FUNCTION moyenne_film(VARCHAR) RETURNS SETOF RECORD AS $$
+DECLARE
+  film INTEGER;
+BEGIN
+  SELECT idFilm INTO film
+  FROM tp_bd_film.film
+  WHERE titre = $1;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'film % n existe pas', $1;
+  END IF;
+
+  RETURN QUERY SELECT COUNT(*)::INTEGER, AVG(note)::FLOAT
+  FROM tp_bd_film.notation N
+  INNER JOIN tp_bd_film.film F ON N.idFilm = F.idfilm
+  WHERE F.idfilm = film;
+END; $$
+LANGUAGE plpgsql;
+
+SELECT * FROM moyenne_film('La mort aux trousses') AS (nbNotes INTEGER, moyenne FLOAT);
+SELECT * FROM moyenne_film('La mort aux trucs') AS (nbNotes INTEGER, moyenne FLOAT);
+
+-- 6
+
+CREATE OR REPLACE FUNCTION update_mail(VARCHAR, VARCHAR) RETURNS VOID AS $$
+BEGIN
+  PERFORM email
+  FROM tp_bd_film.internaute
+  WHERE email = $1;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'internaute % n existe pas', $1;
+  END IF;
+
+  EXECUTE 'UPDATE tp_bd_film.internaute
+  SET' || quote_ident(email) || ' = ' || quote_literal($2) ||
+  'WHERE email = $1';
+
+  EXECUTE 'UPDATE tp_bd_film.notation
+  SET' || quote_ident(email) || ' = ' || quote_literal($2) ||
+  'WHERE email = $1;';
+END; $$
+LANGUAGE plpgsql;
+
+SELECT * FROM update_mail('davy@bnf.fr', 'loic@escales.fr');
+
+SELECT * FROM tp_bd_film.internaute;
+SELECT * FROM tp_bd_film.notation;
