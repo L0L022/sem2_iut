@@ -1,7 +1,7 @@
 #ifndef __SUPERTRACEUR__
 #define __SUPERTRACEUR__
 
-#include "../ez-lib/ez-draw++.h"
+#include "../ez-lib/ez-draw++.hpp"
 #include <iostream>
 #include <sstream>
 #include "Polynome.hpp"
@@ -30,7 +30,7 @@ public:
 
   void expose();
 
-  void keyPress(KeySym keysym);
+  void keyPress(EZKeySym keysym);
 
   void buttonPress(int i, int j, int /*button*/);
   void motionNotify(int i, int j, int button);

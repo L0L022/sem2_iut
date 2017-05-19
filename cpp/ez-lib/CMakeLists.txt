@@ -1,4 +1,4 @@
-add_library(ez-lib ez-draw.c ez-draw++.cpp ez-image.c)
+add_library(ez-lib ez-draw++.cpp)
 
 find_package(X11)
 if (X11_FOUND)

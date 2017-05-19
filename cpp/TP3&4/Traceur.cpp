@@ -59,14 +59,14 @@ void Traceur::trace_curseur() {
     oss << "x=" << x << " y=" << y;
   } else
     oss << "Cliquez pour mesurer une position.";
-  drawText(EZ_BL, 3, getHeight() - 10, oss.str());
+  drawText(EZAlign::BL, 3, getHeight() - 10, oss.str());
 }
 
 Traceur::Traceur(int w, int h, const char *name, Polynome *_f, double _xmin,
         double _xmax, double _ymin, double _ymax, unsigned short _pixel_step)
     : EZWindow(w, h, name), f(_f), xmin(_xmin), xmax(_xmax), ymin(_ymin),
       ymax(_ymax), pixel_step(_pixel_step), curi(-1), curj(-1) {
-  doubleBuffer(true);
+  setDoubleBuffer(true);
 } // On active le double buffer pour limiter le scintillement de l'affichage.
 
 void Traceur::expose() {
@@ -76,51 +76,53 @@ void Traceur::expose() {
   trace_fonction();
 }
 
-void Traceur::keyPress(KeySym keysym) // Une touche du clavier a ete enfoncee ou relachee
+void Traceur::keyPress(EZKeySym keysym) // Une touche du clavier a ete enfoncee ou relachee
 {
   double xstep = (xmax - xmin) / 10.;
   double ystep = (ymax - ymin) / 10.;
   switch (keysym) {
-  case XK_Escape:
-  case XK_q:
-    ez_window_destroy(win); //bof bof
+  case EZKeySym::Escape:
+  case EZKeySym::q:
+    close();
     break;
-  case XK_Left:
+  case EZKeySym::Left:
     xmin -= xstep;
     xmax -= xstep;
     sendExpose();
     break;
-  case XK_Right:
+  case EZKeySym::Right:
     xmin += xstep;
     xmax += xstep;
     sendExpose();
     break;
-  case XK_Down:
+  case EZKeySym::Down:
     ymin -= ystep;
     ymax -= ystep;
     sendExpose();
     break;
-  case XK_Up:
+  case EZKeySym::Up:
     ymin += ystep;
     ymax += ystep;
     sendExpose();
     break;
-  case XK_minus:
-  case XK_KP_Subtract:
+  case EZKeySym::minus:
+  case EZKeySym::KP_Subtract:
     xmin -= xstep;
     xmax += xstep;
     ymin -= ystep;
     ymax += ystep;
     sendExpose();
     break;
-  case XK_plus:
-  case XK_KP_Add:
+  case EZKeySym::plus:
+  case EZKeySym::KP_Add:
     xmin += xstep;
     xmax -= xstep;
     ymin += ystep;
     ymax -= ystep;
     sendExpose();
     break;
+    default:
+      break;
   }
 }
 
