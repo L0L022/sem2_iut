@@ -4,3 +4,4 @@ project(sem2_iut)
 
 add_subdirectory(cpp)
 add_subdirectory(nasm)
+add_subdirectory(qt)
