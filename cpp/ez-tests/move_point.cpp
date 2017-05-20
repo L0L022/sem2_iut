@@ -56,6 +56,10 @@ Point operator-(const Point &p, const int number) {
   return Point(p.x()-number, p.y()-number);
 }
 
+ostream &operator<<(ostream &os, const Point &p) {
+  return os << p.x() << " " << p.y();
+}
+
 bool operator<(const Point &l, const Point &r) {
   return l.x() < r.x() and l.y() < r.y();
 }
@@ -80,24 +84,65 @@ public:
     m_window.setColor(color);
   }
 
-  void setThick(unsigned int thick=1) {
+  void setThick(const unsigned int thick = 1) {
     m_window.setThick(thick);
   }
 
-  void fillCircle(const Point &topRight, const Point &bottomLeft) {
-    m_window.fillCircle(topRight.x(), topRight.y(), bottomLeft.x(), bottomLeft.y());
+  void drawPoint(const int x, const int y) {
+    m_window.drawPoint(x, y);
   }
 
-  void drawText(const EZAlign align, const Point &pos, const std::string &text) {
-    m_window.drawText(align, pos.x(), pos.y(), text);
+  void drawPoint(const Point &p) {
+    m_window.drawPoint(p.x(), p.y());
+  }
+
+  void drawLine(const int firstX, const int firstY, const int secondX, const int secondY) {
+    m_window.drawLine(firstX, firstY, secondX, secondY);
   }
 
   void drawLine(const Point &first, const Point &second) {
     m_window.drawLine(first.x(), first.y(), second.x(), second.y());
   }
 
-  void drawRectangle(const Point &topRight, const Point &bottomLeft) {
-    m_window.drawRectangle(topRight.x(), topRight.y(), bottomLeft.x(), bottomLeft.y());
+  void drawRectangle(const int topLeftX, const int topLeftY, const int bottomRightX, const int bottomRightY, const bool isFill = false) {
+    if (isFill)
+      m_window.fillRectangle(topLeftX, topLeftY, bottomRightX, bottomRightY);
+    else
+      m_window.drawRectangle(topLeftX, topLeftY, bottomRightX, bottomRightY);
+  }
+
+  void drawRectangle(const Point &topLeft, const Point &bottomRight, const bool isFill = false) {
+    drawRectangle(topLeft.x(), topLeft.y(), bottomRight.x(), bottomRight.y(), isFill);
+  }
+
+  void drawCircle(const int topLeftX, const int topLeftY, const int bottomRightX, const int bottomRightY, const bool isFill = false) {
+    if (isFill)
+      m_window.fillCircle(topLeftX, topLeftY, bottomRightX, bottomRightY);
+    else
+      m_window.drawCircle(topLeftX, topLeftY, bottomRightX, bottomRightY);
+  }
+
+  void drawCircle(const Point &topLeft, const Point &bottomRight, const bool isFill = false) {
+    drawCircle(topLeft.x(), topLeft.y(), bottomRight.x(), bottomRight.y(), isFill);
+  }
+
+  void drawTriangle(const int firstX, const int firstY, const int secondX, const int secondY, const int thirdX, const int thirdY, const bool isFill = false) {
+    if (isFill)
+      m_window.fillTriangle(firstX, firstY, secondX, secondY, thirdX, thirdY);
+    else
+      m_window.drawTriangle(firstX, firstY, secondX, secondY, thirdX, thirdY);
+  }
+
+  void drawTriangle(const Point &first, const Point &second, const Point &third, const bool isFill = false) {
+    drawTriangle(first.x(), first.y(), second.x(), second.y(), third.x(), third.y(), isFill);
+  }
+
+  void drawText(const EZAlign align, const int x, const int y, const std::string &text) {
+    m_window.drawText(align, x, y, text);
+  }
+
+  void drawText(const EZAlign align, const Point &pos, const std::string &text) {
+    m_window.drawText(align, pos.x(), pos.y(), text);
   }
 
 private:
@@ -125,7 +170,7 @@ public:
   };
 
   explicit GraphicsItem(GraphicsItem *parent = nullptr)
-  : m_parent(nullptr), m_children(), m_anchor(), m_color(ez_black), m_thick(1), m_isVisible(true)
+  : m_parent(nullptr), m_children(), m_anchor(), m_color(ez_black), m_thick(1), m_isFill(false), m_isVisible(true)
   {
     setParent(parent);
   }
@@ -174,14 +219,25 @@ public:
   }
 
   Point anchor() const {
+    return m_anchor;
+  }
+
+  virtual void setAnchor(const Point &anchor) {
+    m_anchor = anchor;
+  }
+
+  Point absolute() const {
     if (m_parent)
-      return m_anchor + m_parent->anchor();
+      return m_anchor + m_parent->absolute();
     else
       return m_anchor;
   }
 
-  void setAnchor(const Point &anchor) {
-    m_anchor = anchor;
+  virtual void setAbsolute(const Point &pos) {
+    if (m_parent)
+      setAnchor(pos - m_parent->absolute());
+    else
+      setAnchor(pos);
   }
 
   EZColor color() const {
@@ -200,11 +256,19 @@ public:
     m_thick = thick;
   }
 
+  bool isFill() const {
+    return m_isFill;
+  }
+
+  void setFill(const bool fill) {
+    m_isFill = fill;
+  }
+
   bool isVisible() const {
     return m_isVisible;
   }
 
-  void setIsVisible(const bool isVisible = true) {
+  void setVisible(const bool isVisible = true) {
     m_isVisible = isVisible;
   }
 
@@ -233,7 +297,7 @@ public:
 
 protected:
   virtual void meDraw(Canvas *canvas) {}
-  virtual bool meIsOver(const Point &p) { return m_anchor == p; }
+  virtual bool meIsOver(const Point &absoluteP) { return absolute() == absoluteP; }
 
 private:
   GraphicsItem *m_parent;
@@ -241,6 +305,7 @@ private:
   Point m_anchor;
   EZColor m_color;
   unsigned int m_thick;
+  bool m_isFill;
   bool m_isVisible;
 };
 
@@ -276,16 +341,37 @@ protected:
   void meDraw(Canvas *canvas)
   {
     if (canvas)
-      canvas->fillCircle(anchor() - m_radius, anchor() + m_radius);
+      canvas->drawCircle(absolute() - m_radius, absolute() + m_radius, isFill());
   }
 
-  bool meIsOver(const Point &p)
+  bool meIsOver(const Point &absoluteP)
   {
-    return anchor() - m_radius < p and p < anchor() + m_radius;
+    return absolute() - m_radius < absoluteP and absoluteP < absolute() + m_radius;
   }
 
 private:
   unsigned int m_radius;
+};
+
+class GraphicsAnchor : public GraphicsPoint {
+public:
+  explicit GraphicsAnchor(GraphicsItem *parent = nullptr) : GraphicsPoint(parent) {
+    setColor(ez_red);
+  }
+
+  void setAnchor(const Point &anchor) {
+    if(parent())
+      parent()->setAnchor(anchor);
+  }
+
+  void setAbsolute(const Point &pos) {
+    if (parent()) {
+      if (parent()->parent())
+        parent()->setAnchor(pos - parent()->parent()->absolute());
+      else
+        parent()->setAnchor(pos);
+    }
+  }
 };
 
 class GraphicsText : public GraphicsItem {
@@ -320,10 +406,10 @@ protected:
   void meDraw(Canvas *canvas)
   {
     if (canvas)
-      canvas->drawText(m_align, anchor(), m_text);
+      canvas->drawText(m_align, absolute(), m_text);
   }
 
-  bool meIsOver(const Point &p)
+  bool meIsOver(const Point &absoluteP)
   {
     return false;
   }
@@ -339,7 +425,7 @@ public:
   explicit GraphicsRectangle(GraphicsItem *parent = nullptr)
   : GraphicsItem(parent), m_topLeft(nullptr), m_bottomRight(nullptr)
   {
-    m_topLeft = new GraphicsPoint(this);
+    m_topLeft = new GraphicsAnchor(this);
     m_bottomRight = new GraphicsPoint(this);
   }
 
@@ -359,16 +445,15 @@ protected:
   void meDraw(Canvas *canvas)
   {
     if (canvas)
-      canvas->drawRectangle(topLeft()->anchor(), bottomRight()->anchor());
+      canvas->drawRectangle(topLeft()->absolute(), bottomRight()->absolute(), isFill());
   }
 
-  bool meIsOver(const Point &p)
+  bool meIsOver(const Point &absoluteP)
   {
-    return topLeft()->anchor() < p and p < bottomRight()->anchor();
+    return topLeft()->absolute() < absoluteP and absoluteP < bottomRight()->absolute();
   }
 
 private:
-  unsigned int m_radius;
   GraphicsItem *m_topLeft, *m_bottomRight;
 };
 
@@ -383,20 +468,61 @@ public:
 protected:
   void meDraw(Canvas *canvas)
   {
-    if (canvas)
-      for (size_t i = 0; i < m_points.size(); ++i)
-        canvas->drawLine(m_points[i]->anchor(), m_points[(i+1)%m_points.size()]->anchor());
+    if (canvas) {
+      if (isFill() && m_points.size() >= 3)
+        for (size_t i = 2; i < m_points.size(); ++i)
+          canvas->drawTriangle(m_points[0]->absolute(), m_points[i-1]->absolute(), m_points[i]->absolute(), true);
+      else
+        for (size_t i = 0; i < m_points.size(); ++i)
+          canvas->drawLine(m_points[i]->absolute(), m_points[(i+1)%m_points.size()]->absolute());
+    }
   }
 
 protected:
   GraphicsItemList m_points;
 };
 
+class GraphicsPolygon : public GraphicsShape {
+public:
+  GraphicsPolygon(GraphicsItem *parent = nullptr) : GraphicsShape(parent) {
+    GraphicsPoint *a = new GraphicsAnchor(this);
+    m_points.push_back(a);
+  }
+
+  GraphicsItem *newPoint() {
+    GraphicsItem *item = new GraphicsPoint(this);
+    m_points.push_back(item);
+    return item;
+  }
+
+  void popPoint() {
+    if (m_points.size() > 2) {
+      delete m_points.back();
+      m_points.pop_back();
+    }
+  }
+
+  size_t nbPoints() const {
+    return m_points.size();
+  }
+
+  void setNbPoints(const size_t nb) {
+    if (nb <= 1)
+      return;
+
+    while (nb > nbPoints())
+      newPoint();
+
+    while (nbPoints() > nb)
+      popPoint();
+  }
+};
+
 class GraphicsLine : public GraphicsShape {
 public:
   explicit GraphicsLine(GraphicsItem *parent = nullptr) : GraphicsShape(parent)
   {
-    GraphicsPoint *first = new GraphicsPoint(this);
+    GraphicsPoint *first = new GraphicsAnchor(this);
     GraphicsPoint *second = new GraphicsPoint(this);
     m_points.push_back(first);
     m_points.push_back(second);
@@ -419,7 +545,7 @@ class GraphicsTriangle : public GraphicsShape {
 public:
   explicit GraphicsTriangle(GraphicsItem *parent = nullptr) : GraphicsShape(parent)
   {
-    GraphicsPoint *first = new GraphicsPoint(this);
+    GraphicsPoint *first = new GraphicsAnchor(this);
     GraphicsPoint *second = new GraphicsPoint(this);
     GraphicsPoint *third = new GraphicsPoint(this);
     m_points.push_back(first);
@@ -458,7 +584,7 @@ public:
     GraphicsText *text1 = new GraphicsText("EZDraw c'est rigolo ^^", point);
     text1->setAnchor(Point(40, 30));
     text1->setColor(ez_green);
-    text1->setIsVisible(false);
+    text1->setVisible(false);
 
     GraphicsPoint *point2 = new GraphicsPoint(&m_scene);
     point2->setColor(ez_yellow);
@@ -469,13 +595,21 @@ public:
     line->second()->setAnchor(Point(40, 0));
 
     GraphicsTriangle *triangle = new GraphicsTriangle(&m_scene);
+    triangle->setFill(true);
     triangle->first()->setAnchor(Point(50, 10));
     triangle->second()->setAnchor(Point(40, 20));
     triangle->third()->setAnchor(Point(60, 20));
 
     GraphicsRectangle *rectangle = new GraphicsRectangle(&m_scene);
-    rectangle->topLeft()->setAnchor(Point(70, 70));
-    rectangle->bottomRight()->setAnchor(Point(90, 90));
+    rectangle->setThick(5);
+    rectangle->topLeft()->setAbsolute(Point(4, 3));
+    rectangle->bottomRight()->setAbsolute(Point(5, 5));
+    rectangle->bottomRight()->setAbsolute(Point(3, 2));
+
+    GraphicsPolygon *polygon = new GraphicsPolygon(&m_scene);
+    polygon->setAbsolute(Point(40, 40));
+    polygon->setFill(true);
+    polygon->setNbPoints(5);
   }
 
   void buttonPress(int x, int y, int button) {
@@ -491,7 +625,7 @@ public:
 
   void motionNotify(int x, int y, int button) {
     if (currentItem) {
-      currentItem->setAnchor(Point(x, y));
+      currentItem->setAbsolute(Point(x, y));
     }
     sendExpose();
   }
