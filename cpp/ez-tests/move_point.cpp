@@ -2,6 +2,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <cmath>
 #include "../ez-lib/ez-draw++.hpp"
 
 using namespace std;
@@ -161,7 +162,11 @@ public:
     ShapeType = 0x6,
     LineType = 0x8,
     TriangleType = 0x10,
-    RectangleType = 0x12
+    RectangleType = 0x12,
+    PolygonType = 0x14,
+    AnchorType = 0x16,
+    CircleType = 0x18,
+    EllipseType = 0x20
   };
 
   enum SearchTypes {
@@ -176,7 +181,8 @@ public:
   }
 
   virtual ~GraphicsItem() {
-    cerr << "GraphicsItem deleted " << this << endl;
+    setParent(nullptr);
+    cerr << "GraphicsItem deleted :" << this << " of type : " << type() << endl;
   }
 
   GraphicsItem *parent() const {
@@ -196,9 +202,8 @@ public:
       }
     }
     m_parent = parent;
-    if (parent) {
-      parent->m_children.push_back(std::unique_ptr<GraphicsItem>(this));
-    }
+    if (m_parent)
+      m_parent->m_children.push_back(std::unique_ptr<GraphicsItem>(this));
   }
 
   virtual GraphicsTypes type() const {
@@ -372,6 +377,10 @@ public:
         parent()->setAnchor(pos);
     }
   }
+
+  GraphicsTypes type() const {
+    return PointType;//FIXME AnchorType;
+  }
 };
 
 class GraphicsText : public GraphicsItem {
@@ -484,7 +493,7 @@ protected:
 
 class GraphicsPolygon : public GraphicsShape {
 public:
-  GraphicsPolygon(GraphicsItem *parent = nullptr) : GraphicsShape(parent) {
+  explicit GraphicsPolygon(GraphicsItem *parent = nullptr) : GraphicsShape(parent) {
     GraphicsPoint *a = new GraphicsAnchor(this);
     m_points.push_back(a);
   }
@@ -515,6 +524,10 @@ public:
 
     while (nbPoints() > nb)
       popPoint();
+  }
+
+  GraphicsTypes type() const {
+    return PolygonType;
   }
 };
 
@@ -571,6 +584,75 @@ public:
 };
 
 class GraphicsCircle : public GraphicsShape {
+public:
+  explicit GraphicsCircle(GraphicsItem *parent) : GraphicsShape(parent) {
+    GraphicsItem *center = new GraphicsAnchor(this);
+    GraphicsItem *radius = new GraphicsPoint(this);
+    m_points.push_back(center);
+    m_points.push_back(radius);
+  }
+
+  GraphicsItem *center() {
+    return m_points[0];
+  }
+
+  GraphicsItem *radius() {
+    return m_points[1];
+  }
+
+  GraphicsTypes type() const {
+    return CircleType;
+  }
+
+protected:
+  void meDraw(Canvas *canvas)
+  {
+    if (canvas) {
+      Point distP = radius()->absolute() - center()->absolute();
+      int dist = hypot(distP.x(), distP.y());
+      canvas->drawCircle(center()->absolute() - dist, center()->absolute() + dist, isFill());
+    }
+  }
+
+  bool meIsOver(const Point &absoluteP)
+  {
+    return false;
+  }
+};
+
+class GraphicsEllipse : public GraphicsShape {
+public:
+  explicit GraphicsEllipse(GraphicsItem *parent) : GraphicsShape(parent) {
+    GraphicsItem *center = new GraphicsAnchor(this);
+    GraphicsItem *radius = new GraphicsPoint(this);
+    m_points.push_back(center);
+    m_points.push_back(radius);
+  }
+
+  GraphicsItem *center() {
+    return m_points[0];
+  }
+
+  //change the name ?
+  GraphicsItem *radius() {
+    return m_points[1];
+  }
+
+  GraphicsTypes type() const {
+    return EllipseType;
+  }
+
+protected:
+  void meDraw(Canvas *canvas)
+  {
+    if (canvas)
+      canvas->drawCircle(center()->absolute(), radius()->absolute(), isFill());
+  }
+
+  bool meIsOver(const Point &absoluteP)
+  {
+    return false;
+  }
 };
 
 class Window : public EZWindow
@@ -578,38 +660,49 @@ class Window : public EZWindow
 public:
   Window() : EZWindow(), m_canvas(*this), m_scene(), currentItem(nullptr) {
     GraphicsPoint *point = new GraphicsPoint(&m_scene);
+    point->setAbsolute({50, 50});
     point->setColor(ez_blue);
     GraphicsText *text = new GraphicsText("Je suis super fort !!!", point);
+    text->setAnchor({0, 10});
     text->setColor(ez_red);
     GraphicsText *text1 = new GraphicsText("EZDraw c'est rigolo ^^", point);
-    text1->setAnchor(Point(40, 30));
+    text1->setAnchor({10, 20});
     text1->setColor(ez_green);
-    text1->setVisible(false);
 
     GraphicsPoint *point2 = new GraphicsPoint(&m_scene);
+    point2->setAbsolute({100, 50});
     point2->setColor(ez_yellow);
     GraphicsText *text2 = new GraphicsText("Bonjour les gens !!!!", point2);
     text2->setColor(ez_red);
 
     GraphicsLine *line = new GraphicsLine(&m_scene);
-    line->second()->setAnchor(Point(40, 0));
+    line->setAbsolute({50, 100});
+    line->second()->setAnchor({80, 20});
 
     GraphicsTriangle *triangle = new GraphicsTriangle(&m_scene);
     triangle->setFill(true);
-    triangle->first()->setAnchor(Point(50, 10));
-    triangle->second()->setAnchor(Point(40, 20));
-    triangle->third()->setAnchor(Point(60, 20));
+    triangle->setAbsolute({200, 20});
+    triangle->second()->setAnchor(Point(-30, 30));
+    triangle->third()->setAnchor(Point(30, 30));
 
     GraphicsRectangle *rectangle = new GraphicsRectangle(&m_scene);
     rectangle->setThick(5);
-    rectangle->topLeft()->setAbsolute(Point(4, 3));
-    rectangle->bottomRight()->setAbsolute(Point(5, 5));
-    rectangle->bottomRight()->setAbsolute(Point(3, 2));
+    rectangle->setAbsolute({100, 100});
+    rectangle->bottomRight()->setAnchor({80, 50});
 
     GraphicsPolygon *polygon = new GraphicsPolygon(&m_scene);
-    polygon->setAbsolute(Point(40, 40));
     polygon->setFill(true);
+    polygon->setAbsolute({200, 100});
+    polygon->setNbPoints(10);
     polygon->setNbPoints(5);
+
+    GraphicsCircle *circle = new GraphicsCircle(&m_scene);
+    circle->setAbsolute({100, 300});
+    circle->radius()->setAnchor({50, 50});
+
+    GraphicsEllipse *ellipse = new GraphicsEllipse(&m_scene);
+    ellipse->setAbsolute({200, 300});
+    ellipse->radius()->setAnchor({100, 50});
   }
 
   void buttonPress(int x, int y, int button) {
