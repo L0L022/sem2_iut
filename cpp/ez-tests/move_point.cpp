@@ -3,6 +3,8 @@
 #include <memory>
 #include <string>
 #include <cmath>
+#include <cstdint>
+#include <sstream>
 #include "../ez-lib/ez-draw++.hpp"
 
 using namespace std;
@@ -64,6 +66,73 @@ ostream &operator<<(ostream &os, const Point &p) {
 bool operator<(const Point &l, const Point &r) {
   return l.x() < r.x() and l.y() < r.y();
 }
+
+class Color {
+public:
+  enum Colors {
+    Black = 0x000000,
+    White = 0xFFFFFF,
+    Grey = 0x969696,
+    Red = 0xFF0000,
+    Green = 0x00FF00,
+    Blue = 0x0000FF,
+    Yellow = 0xFFFF00,
+    Cyan = 0x00FFFF,
+    Mangenta = 0xFF00FF
+  };
+
+  explicit Color(const Colors color = Black) : m_color(color) {}
+
+  Color(const uint8_t red, const uint8_t green, const uint8_t blue)
+  : m_color(EZWindow::getRGB(red, green, blue))
+  {}
+
+  Color(const double hue, const double saturation, const double value)
+  : m_color(EZWindow::getHSV(hue, saturation, value))
+  {}
+
+  explicit Color(const ulong grey) : m_color(EZWindow::getGrey(grey)) {}
+
+  uint8_t red() const {
+    return (m_color & Red) >> 16;
+  }
+
+  void setRed(const uint8_t red) {
+    m_color &= ~Red;
+    m_color |= (red << 16);
+  }
+
+  uint8_t green() const {
+    return (m_color & Green) >> 8;
+  }
+
+  void setGreen(const uint8_t green) {
+    m_color &= ~Green;
+    m_color |= (green << 8);
+  }
+
+  uint8_t blue() const {
+    return m_color & Blue;
+  }
+
+  void setBlue(const uint8_t blue) {
+    m_color &= ~Blue;
+    m_color |= blue;
+  }
+
+  uint32_t hexa() const {
+    return m_color;
+  }
+
+  std::string hexaStr() const {
+    std::stringstream buf;
+    buf << "0x" << std::hex << m_color;
+    return buf.str();
+  }
+
+private:
+  uint32_t m_color;
+};
 
 class Canvas {
 public:
