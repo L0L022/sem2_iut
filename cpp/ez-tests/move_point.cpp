@@ -69,7 +69,7 @@ bool operator<(const Point &l, const Point &r) {
 
 class Color {
 public:
-  enum Colors {
+  enum Colors : uint32_t {
     Black = 0x000000,
     White = 0xFFFFFF,
     Grey = 0x969696,
@@ -81,6 +81,7 @@ public:
     Mangenta = 0xFF00FF
   };
 
+  //pas super top
   explicit Color(const Colors color = Black) : m_color(color) {}
 
   Color(const uint8_t red, const uint8_t green, const uint8_t blue)
@@ -120,8 +121,65 @@ public:
     m_color |= blue;
   }
 
+  double hue() const {
+    double h(0), r(red()/255.0), g(green()/255.0), b(blue()/255.0);
+    double max = r > g ? std::max(r, b) : std::max(g, b);
+    double min = r < g ? std::min(r, b) : std::min(g, b);
+
+    if (max == min) {
+      h = 0;
+    } else if (max == r) {
+      h = (60 * ((g-b)/(max-min)) + 360);
+      while (h > 360)
+        h -= 360;
+    } else if (max == g) {
+      h = 60 * ((b-r)/(max-min)) + 120;
+    } else if (max == b) {
+      h = 60 * ((r-g)/(max-min)) + 240;
+    }
+
+    return h;
+  }
+
+  void setHue(const double hue) {
+    m_color = EZWindow::getHSV(hue, saturation(), value());
+  }
+
+  double saturation() const {
+    double s(0), r(red()/255.0), g(green()/255.0), b(blue()/255.0);
+    double max = r > g ? std::max(r, b) : std::max(g, b);
+
+    if (max == 0) {
+      s = 0;
+    } else {
+      double min = r < g ? std::min(r, b) : std::min(g, b);
+      s = 1 - min/max;
+    }
+
+    return s;
+  }
+
+  void setSaturation(const double saturation) {
+    m_color = EZWindow::getHSV(hue(), saturation, value());
+  }
+
+  double value() const {
+    double r(red()/255.0), g(green()/255.0), b(blue()/255.0);
+    double max = r > g ? std::max(r, b) : std::max(g, b);
+
+    return max;
+  }
+
+  void setValue(const double value) {
+    m_color = EZWindow::getHSV(hue(), saturation(), value);
+  }
+
   uint32_t hexa() const {
     return m_color;
+  }
+
+  void setHexa(const uint32_t hexa) {
+    m_color = hexa;
   }
 
   std::string hexaStr() const {
@@ -314,11 +372,11 @@ public:
       setAnchor(pos);
   }
 
-  EZColor color() const {
+  Color color() const {
     return m_color;
   }
 
-  void setColor(const EZColor color) {
+  void setColor(const Color color) {
     m_color = color;
   }
 
@@ -353,7 +411,7 @@ public:
     for (auto &ptr : m_children)
       ptr->draw(canvas);
     if(canvas) {
-      canvas->setColor(m_color);
+      canvas->setColor(m_color.hexa());
       canvas->setThick(m_thick);
     }
     meDraw(canvas);
@@ -377,7 +435,7 @@ private:
   GraphicsItem *m_parent;
   vector<unique_ptr<GraphicsItem>> m_children;
   Point m_anchor;
-  EZColor m_color;
+  Color m_color;
   unsigned int m_thick;
   bool m_isFill;
   bool m_isVisible;
@@ -430,7 +488,7 @@ private:
 class GraphicsAnchor : public GraphicsPoint {
 public:
   explicit GraphicsAnchor(GraphicsItem *parent = nullptr) : GraphicsPoint(parent) {
-    setColor(ez_red);
+    setColor(Color(Color::Red));
   }
 
   void setAnchor(const Point &anchor) {
@@ -730,19 +788,19 @@ public:
   Window() : EZWindow(), m_canvas(*this), m_scene(), currentItem(nullptr) {
     GraphicsPoint *point = new GraphicsPoint(&m_scene);
     point->setAbsolute({50, 50});
-    point->setColor(ez_blue);
+    point->setColor(Color(Color::Blue));
     GraphicsText *text = new GraphicsText("Je suis super fort !!!", point);
     text->setAnchor({0, 10});
-    text->setColor(ez_red);
+    text->setColor(Color(Color::Yellow));
     GraphicsText *text1 = new GraphicsText("EZDraw c'est rigolo ^^", point);
     text1->setAnchor({10, 20});
-    text1->setColor(ez_green);
+    text1->setColor(Color(Color::Green));
 
     GraphicsPoint *point2 = new GraphicsPoint(&m_scene);
     point2->setAbsolute({100, 50});
-    point2->setColor(ez_yellow);
+    point2->setColor(Color(Color::Yellow));
     GraphicsText *text2 = new GraphicsText("Bonjour les gens !!!!", point2);
-    text2->setColor(ez_red);
+    text2->setColor(Color(Color::Red));
 
     GraphicsLine *line = new GraphicsLine(&m_scene);
     line->setAbsolute({50, 100});
