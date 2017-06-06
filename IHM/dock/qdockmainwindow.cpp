@@ -20,6 +20,8 @@ QDockMainWindow::QDockMainWindow(QWidget *parent)
     setCentralWidget(new QWidget);
 
     m_layout = new QVBoxLayout;
+    m_layout->setSpacing(10);
+    m_layout->setMargin(5);
     centralWidget()->setLayout(m_layout);
 
     QMenu *menu = menuBar()->addMenu(tr("Projet Qt"));
@@ -62,7 +64,7 @@ void QDockMainWindow::closeProject()
 void QDockMainWindow::addActions()
 {
     if (m_layout->isEmpty()) {
-        m_layout->addWidget(new QLabel(tr("Projet : %1").arg(m_commandDir)));
+        m_layout->addWidget(new QLabel(tr("Projet : %1").arg(m_commandDir)), 0, Qt::AlignHCenter);
         for (int i = 0; i < m_commands.size(); ++i)
             m_layout->addWidget(new QLaunchButton(m_aliases[i], m_commands[i], m_commandDir));
     }
