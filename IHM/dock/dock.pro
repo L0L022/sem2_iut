@@ -26,8 +26,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         qdockmainwindow.cpp \
     qlaunchbutton.cpp \
-    qprocessdialog.cpp
+    qprocessdialog.cpp \
+    qcustomactiondialog.cpp
 
 HEADERS  += qdockmainwindow.h \
     qlaunchbutton.h \
-    qprocessdialog.h
+    qprocessdialog.h \
+    qcustomactiondialog.h

@@ -13,7 +13,7 @@ QProcessDialog::QProcessDialog(QProcess *process, QWidget *parent)
     QVBoxLayout *layout = new QVBoxLayout;
     setLayout(layout);
 
-    m_label = new QLabel(m_process->workingDirectory() + '/' + m_process->program() + " :\n\n");
+    m_label = new QLabel;
     layout->addWidget(m_label);
 
     m_button = new QPushButton(tr("Arrêter"));

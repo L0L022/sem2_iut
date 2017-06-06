@@ -19,6 +19,7 @@ public:
 private:
     void addActions();
     void removeActions();
+    void addCustomAction();
 
 private:
     const QStringList m_aliases;
@@ -27,6 +28,7 @@ private:
 
     QVBoxLayout *m_layout;
     QAction *m_actionCloseProject;
+    QAction *m_actionCustomAction;
 };
 
 #endif // QDOCKMAINWINDOW_H
