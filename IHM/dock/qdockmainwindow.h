@@ -13,9 +13,12 @@ public:
     QDockMainWindow(QWidget *parent = 0);
     ~QDockMainWindow();
 
-private:
     void openProject(const QString &directory);
     void closeProject();
+
+private:
+    void addActions();
+    void removeActions();
 
 private:
     const QStringList m_aliases;

@@ -7,11 +7,14 @@ class QLaunchButton : public QPushButton
 {
     Q_OBJECT
 public:
-    explicit QLaunchButton(QWidget *parent = 0);
+    explicit QLaunchButton(const QString &alias, const QString &command, const QString &dir, QWidget *parent = nullptr);
 
-signals:
+    void launch();
 
-public slots:
+private:
+    QString m_alias;
+    QString m_command;
+    QString m_dir;
 };
 
 #endif // QLAUNCHBUTTON_H
